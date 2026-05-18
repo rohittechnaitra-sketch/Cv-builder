@@ -1,756 +1,1414 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>CV Builder</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate CV Builder</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:#0f1c2e;--navy-light:#1a2e47;--slate:#4a5568;--muted:#6b7280;
-  --accent:#c9a84c;--accent-light:#f5e9cc;--border:#e2e8f0;
-  --surface:#f8fafc;--white:#ffffff;
-  --font-display:'Playfair Display',Georgia,serif;
-  --font-body:'DM Sans',system-ui,sans-serif;
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
-body{font-family:var(--font-body);background:#eef0f5;color:#1a202c;min-height:100vh;display:flex;flex-direction:column}
-/* ── TOP BAR ── */
-.topbar{background:var(--navy);color:#fff;padding:0 2rem;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25)}
-.topbar-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.2rem;letter-spacing:.02em}
-.topbar-brand span{color:var(--accent)}
-.topbar-logo{width:32px;height:32px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--navy)}
-.topbar-actions{display:flex;gap:10px}
-.btn{cursor:pointer;font-family:var(--font-body);font-size:.82rem;font-weight:500;border-radius:7px;padding:7px 16px;transition:all .18s;border:none;outline:none}
-.btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
-.btn-ghost:hover{background:rgba(255,255,255,.2)}
-.btn-accent{background:var(--accent);color:var(--navy);font-weight:600}
-.btn-accent:hover{filter:brightness(1.08)}
-/* ── LAYOUT ── */
-.workspace{display:grid;grid-template-columns:400px 1fr;gap:0;flex:1;overflow:hidden;height:calc(100vh - 58px)}
-/* ── FORM PANEL ── */
-.form-panel{background:var(--white);overflow-y:auto;border-right:1px solid var(--border)}
-.form-panel::-webkit-scrollbar{width:4px}
-.form-panel::-webkit-scrollbar-track{background:transparent}
-.form-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-.form-section{border-bottom:1px solid var(--border);padding:1.4rem 1.6rem}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;cursor:pointer;user-select:none}
-.section-title{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--navy);display:flex;align-items:center;gap:8px}
-.section-title .dot{width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block}
-.section-arrow{font-size:.7rem;color:var(--muted);transition:transform .2s}
-.section-arrow.open{transform:rotate(180deg)}
-.section-body{display:none}
-.section-body.open{display:block}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.form-row.full{grid-template-columns:1fr}
-.form-group{display:flex;flex-direction:column;gap:5px}
-label{font-size:.75rem;font-weight:500;color:var(--slate);letter-spacing:.02em}
-input,textarea,select{width:100%;font-family:var(--font-body);font-size:.83rem;color:#1a202c;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px;transition:border-color .15s,box-shadow .15s;outline:none;resize:vertical}
-input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,168,76,.15)}
-textarea{min-height:70px;line-height:1.5}
-.add-btn{display:flex;align-items:center;gap:6px;font-family:var(--font-body);font-size:.78rem;font-weight:500;color:var(--accent);background:var(--accent-light);border:1px dashed rgba(201,168,76,.5);border-radius:6px;padding:7px 14px;cursor:pointer;transition:all .15s;margin-top:4px;width:100%}
-.add-btn:hover{background:#f0dca0}
-.entry-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.9rem 1rem;margin-bottom:.75rem;position:relative}
-.entry-card .remove-btn{position:absolute;top:8px;right:8px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:2px 5px;border-radius:4px;transition:all .15s}
-.entry-card .remove-btn:hover{background:#fee2e2;color:#dc2626}
-/* photo upload */
-.photo-upload-area{display:flex;align-items:center;gap:1rem;padding:.5rem 0}
-.photo-preview{width:64px;height:64px;border-radius:50%;background:#e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--muted);flex-shrink:0;border:2px solid var(--border)}
-.photo-preview img{width:100%;height:100%;object-fit:cover}
-.photo-upload-btn{font-family:var(--font-body);font-size:.78rem;font-weight:500;color:var(--navy);background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 14px;cursor:pointer;transition:all .15s}
-.photo-upload-btn:hover{border-color:var(--accent);color:var(--accent)}
-/* color pickers row */
-.color-pickers{display:flex;gap:.6rem;margin-top:.6rem;flex-wrap:wrap}
-.color-swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0}
-.color-swatch.active,.color-swatch:hover{border-color:#fff;box-shadow:0 0 0 3px var(--accent)}
-/* skills */
-.skill-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.skill-tag{display:flex;align-items:center;gap:4px;background:var(--navy);color:#fff;font-size:.73rem;padding:4px 10px;border-radius:20px}
-.skill-tag button{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:.75rem;padding:0;line-height:1}
-.skill-tag button:hover{color:#fff}
-.skill-input-row{display:flex;gap:6px}
-.skill-input-row input{flex:1}
-.skill-input-row .btn-small{flex-shrink:0;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:.78rem;cursor:pointer}
-/* ── PREVIEW PANEL ── */
-.preview-panel{background:#d1d5db;overflow-y:auto;display:flex;justify-content:center;padding:2rem 1.5rem}
-.preview-panel::-webkit-scrollbar{width:6px}
-.preview-panel::-webkit-scrollbar-thumb{background:#9ca3af;border-radius:4px}
-/* ── CV DOCUMENT ── */
-.cv-doc{width:210mm;min-height:297mm;background:var(--white);box-shadow:0 8px 40px rgba(0,0,0,.18);display:flex;flex-direction:column}
-/* header strip */
-.cv-header{background:var(--navy);color:#fff;padding:2.4rem 2.6rem 2rem;display:flex;gap:1.5rem;align-items:flex-start}
-.cv-header-photo{width:82px;height:82px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.3);flex-shrink:0}
-.cv-header-photo-placeholder{width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(255,255,255,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.4)}
-.cv-header-text{flex:1;min-width:0}
-.cv-name{font-family:var(--font-display);font-size:2.1rem;font-weight:700;line-height:1.1;letter-spacing:-.01em;color:#fff;word-break:break-word}
-.cv-title{font-size:.95rem;font-weight:300;color:rgba(255,255,255,.75);margin:.3rem 0 .9rem;letter-spacing:.04em}
-.cv-contacts{display:flex;flex-wrap:wrap;gap:.3rem .9rem}
-.cv-contact-item{font-size:.73rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:4px}
-.cv-contact-item .cv-icon{font-size:.75rem;opacity:.7}
-/* accent bar */
-.cv-accent-bar{height:5px;background:var(--accent)}
-/* body layout */
-.cv-body{display:grid;grid-template-columns:1fr 2.3fr;flex:1}
-/* sidebar */
-.cv-sidebar{background:#f1f4f8;padding:1.5rem 1.4rem;border-right:1px solid #e4e8ef}
-.cv-sidebar-section{margin-bottom:1.6rem}
-.cv-sec-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--accent);margin-bottom:.7rem;padding-bottom:.35rem;border-bottom:1.5px solid var(--accent)}
-/* skills in cv */
-.cv-skill-item{display:flex;flex-direction:column;gap:3px;margin-bottom:.5rem}
-.cv-skill-name{font-size:.75rem;color:var(--navy);font-weight:500}
-.cv-skill-bar-track{height:3px;background:#dde1e8;border-radius:2px}
-.cv-skill-bar-fill{height:3px;background:var(--accent);border-radius:2px;transition:width .3s}
-/* cv tag */
-.cv-tag{display:inline-block;background:var(--navy);color:#fff;font-size:.65rem;padding:3px 8px;border-radius:3px;margin:2px}
-/* languages */
-.cv-lang-item{font-size:.75rem;color:var(--slate);margin-bottom:.25rem;display:flex;justify-content:space-between}
-.cv-lang-level{font-size:.7rem;color:var(--muted);font-style:italic}
-/* main content */
-.cv-main{padding:1.5rem 1.8rem}
-.cv-main-section{margin-bottom:1.5rem}
-.cv-main-title{font-family:var(--font-display);font-size:.95rem;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;border-bottom:2px solid var(--accent);padding-bottom:.3rem;margin-bottom:.9rem}
-/* profile text */
-.cv-profile{font-size:.8rem;line-height:1.7;color:var(--slate)}
-/* experience / education entries */
-.cv-entry{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
-.cv-entry:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.cv-entry-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.18rem}
-.cv-entry-title{font-size:.83rem;font-weight:600;color:var(--navy);font-family:var(--font-display)}
-.cv-entry-date{font-size:.7rem;color:var(--accent);white-space:nowrap;font-weight:500;background:var(--accent-light);padding:2px 7px;border-radius:3px;flex-shrink:0}
-.cv-entry-sub{font-size:.76rem;color:var(--muted);font-style:italic;margin-bottom:.3rem}
-.cv-entry-desc{font-size:.76rem;line-height:1.65;color:var(--slate)}
-.cv-entry-desc ul{padding-left:1rem}
-.cv-entry-desc li{margin-bottom:.15rem}
-/* empty state */
-.cv-empty{font-size:.75rem;color:#cbd5e0;font-style:italic}
-/* print button */
-.print-controls{display:flex;gap:8px;justify-content:center;margin-bottom:1rem}
+
+:root{
+  --navy:#0f172a;
+  --accent:#c9a84c;
+  --surface:#f8fafc;
+  --border:#e5e7eb;
+  --sidebar:#f1f5f9;
+  --font-display:'Playfair Display',serif;
+  --font-body:'DM Sans',sans-serif;
+}
+
+body{
+  font-family:var(--font-body);
+  background:#eef2f7;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* TOPBAR */
+
+.topbar{
+  height:65px;
+  background:var(--navy);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 25px;
+}
+
+.logo{
+  font-size:24px;
+  font-weight:700;
+}
+
+.logo span{
+  color:var(--accent);
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+}
+
+.btn{
+  border:none;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.btn-dark{
+  background:rgba(255,255,255,.1);
+  color:#fff;
+}
+
+.btn-accent{
+  background:var(--accent);
+  color:#111827;
+}
+
+/* LAYOUT */
+
+.workspace{
+  display:grid;
+  grid-template-columns:430px 1fr;
+  height:calc(100vh - 65px);
+}
+
+/* PANEL */
+
+.panel{
+  background:#fff;
+  overflow-y:auto;
+  border-right:1px solid var(--border);
+}
+
+.section{
+  padding:22px;
+  border-bottom:1px solid var(--border);
+}
+
+.section h3{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  margin-bottom:16px;
+  color:var(--navy);
+}
+
+.form-group{
+  margin-bottom:14px;
+}
+
+label{
+  display:block;
+  font-size:12px;
+  margin-bottom:6px;
+  font-weight:700;
+}
+
+input,
+textarea{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--surface);
+  border-radius:8px;
+  padding:11px;
+  font-family:inherit;
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.add-btn{
+  width:100%;
+  border:none;
+  padding:11px;
+  border-radius:8px;
+  background:#fdf3d7;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.entry{
+  position:relative;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+  margin-bottom:14px;
+  background:#fafafa;
+}
+
+.remove{
+  position:absolute;
+  top:8px;
+  right:8px;
+  width:26px;
+  height:26px;
+  border:none;
+  border-radius:50%;
+  background:#fee2e2;
+  color:#dc2626;
+  cursor:pointer;
+}
+
+/* TEMPLATE */
+
+.template-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.template-card{
+  border:2px solid var(--border);
+  border-radius:10px;
+  padding:8px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.template-card.active{
+  border-color:var(--accent);
+}
+
+.template-preview{
+  height:90px;
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:6px;
+}
+
+.classic-preview .top{
+  height:24px;
+  background:#0f172a;
+}
+
+.classic-preview .body{
+  display:grid;
+  grid-template-columns:30% 1fr;
+  height:66px;
+}
+
+.classic-preview .left{
+  background:#d1d5db;
+}
+
+.classic-preview .right{
+  background:#fff;
+}
+
+.modern-preview .bar{
+  height:30px;
+  background:linear-gradient(90deg,#0f172a,#334155);
+}
+
+.modern-preview .line{
+  height:6px;
+  background:#d1d5db;
+  margin:10px;
+}
+
+.minimal-preview{
+  padding:10px;
+}
+
+.minimal-preview .name{
+  height:10px;
+  width:70%;
+  background:#111827;
+  margin-bottom:10px;
+}
+
+.minimal-preview .l{
+  height:6px;
+  background:#d1d5db;
+  margin-bottom:8px;
+}
+
+/* PREVIEW */
+
+.preview{
+  overflow:auto;
+  padding:30px;
+  display:flex;
+  justify-content:center;
+}
+
+.cv{
+  width:210mm;
+  min-height:297mm;
+  background:#fff;
+  box-shadow:0 10px 40px rgba(0,0,0,.12);
+}
+
+/* HEADER */
+
+.cv-header{
+  background:var(--navy);
+  color:#fff;
+  padding:40px;
+}
+
+.cv-header-flex{
+  display:flex;
+  align-items:center;
+  gap:25px;
+  flex-wrap:wrap;
+}
+
+.cv-image{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid rgba(255,255,255,.2);
+}
+
+.cv-name{
+  font-size:42px;
+  font-family:var(--font-display);
+}
+
+.cv-role{
+  margin-top:5px;
+  font-size:18px;
+  opacity:.85;
+}
+
+.cv-contact{
+  margin-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  font-size:14px;
+}
+
+/* CONTENT */
+
+.cv-content{
+  display:grid;
+  grid-template-columns:30% 1fr;
+}
+
+.cv-sidebar{
+  background:var(--sidebar);
+  padding:25px;
+    height: 142vh;
+
+}
+
+.cv-main{
+  padding:30px;
+}
+
+.cv-section{
+  margin-bottom:28px;
+}
+
+.cv-title{
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:var(--accent);
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.skill{
+  display:inline-block;
+  background:var(--navy);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:30px;
+  margin:4px;
+  font-size:12px;
+}
+
+.exp,
+.edu{
+  margin-bottom:20px;
+}
+
+.exp h4,
+.edu h4{
+  font-size:17px;
+}
+
+small{
+  color:#6b7280;
+}
+
+/* MODERN */
+
+.template-modern .cv-content{
+  grid-template-columns:1fr;
+}
+
+.template-modern .cv-sidebar{
+  border-bottom:1px solid var(--border);
+}
+
+.template-modern .cv-header{
+  text-align:center;
+}
+
+.template-modern .cv-header-flex{
+  justify-content:center;
+}
+
+/* MINIMAL LAYOUT */
+
+.template-minimal .cv-content{
+  display:block;
+}
+
+.template-minimal .cv-sidebar{
+  background:#fff;
+  padding:0 30px 10px;
+  border-bottom:1px solid var(--border);
+}
+
+.template-minimal .cv-main{
+  padding-top:20px;
+}
+
+.template-minimal .cv-header{
+  background:#fff;
+  color:#111827;
+  border-bottom:4px solid var(--accent);
+}
+
+.template-minimal .cv-title{
+  color:#111827;
+  border-left:4px solid var(--accent);
+  padding-left:10px;
+  margin-top:10px;
+}
+
+.template-minimal .skill{
+  background:#111827;
+}
+
+.template-minimal .cv-section{
+  margin-bottom:24px;
+}
+
+/* MOBILE */
 
 @media(max-width:900px){
-  .workspace{grid-template-columns:1fr;grid-template-rows:auto auto}
-  .form-panel{overflow:visible;height:auto;border-right:none;border-bottom:1px solid var(--border)}
-  .preview-panel{padding:1.5rem 1rem}
-  .cv-doc{width:100%;min-height:auto}
-  .cv-header{padding:1.5rem}
-  .cv-name{font-size:1.5rem}
-  .cv-body{grid-template-columns:1fr}
-  .cv-sidebar{border-right:none;border-bottom:1px solid var(--border)}
+
+  body{
+    overflow:auto;
+  }
+
+  .workspace{
+    grid-template-columns:1fr;
+    height:auto;
+  }
+
+  .preview{
+    padding:10px;
+  }
+
+  .cv{
+    width:100%;
+  }
+
 }
+
+/* PRINT */
+
+@media print{
+
+  *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+
+  .topbar,
+  .panel{
+    display:none !important;
+  }
+
+  .workspace{
+    display:block;
+  }
+
+  .preview{
+    padding:0;
+  }
+
+  .cv{
+    width:210mm;
+    box-shadow:none;
+  }
+
+}
+
 </style>
 </head>
+
 <body>
 
-<!-- TOP BAR -->
-<header class="topbar">
-  <div class="topbar-brand">
-    <div class="topbar-logo">CV</div>
-    <span>CV <span>Builder</span></span>
+<div class="topbar">
+
+  <div class="logo">
+    CV <span>Builder</span>
   </div>
-  <div class="topbar-actions">
-    <button class="btn btn-ghost" onclick="clearAll()">✕ Clear</button>
-    <button class="btn btn-accent" onclick="printCV()">⬇ Download / Print</button>
+
+  <div class="actions">
+
+    <button class="btn btn-dark"
+            onclick="clearAll()">
+      Clear
+    </button>
+
+    <button class="btn btn-accent"
+            onclick="window.print()">
+      Print CV
+    </button>
+
   </div>
-</header>
+
+</div>
 
 <div class="workspace">
 
-<!-- ═══════════════════ FORM PANEL ═══════════════════ -->
-<aside class="form-panel">
+  <!-- LEFT -->
 
-  <!-- PERSONAL INFO -->
-  <div class="form-section">
-    <div class="section-header" onclick="toggleSection(this)">
-      <span class="section-title"><span class="dot"></span>Personal Information</span>
-      <span class="section-arrow open">▾</span>
-    </div>
-    <div class="section-body open">
-      <div class="photo-upload-area">
-        <div class="photo-preview" id="photo-preview-circle">📷</div>
-        <div>
-          <label for="photo-input" class="photo-upload-btn">Upload Photo</label>
-          <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="handlePhoto(this)"/>
-          <div style="font-size:.7rem;color:var(--muted);margin-top:4px">Recommended: square image</div>
-        </div>
-      </div>
-      <div class="form-row" style="margin-top:10px">
-        <div class="form-group"><label>First Name</label><input id="firstName" placeholder="Jane" oninput="update()"/></div>
-        <div class="form-group"><label>Last Name</label><input id="lastName" placeholder="Doe" oninput="update()"/></div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group"><label>Job Title</label><input id="jobTitle" placeholder="Senior Product Designer" oninput="update()"/></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Email</label><input id="email" placeholder="jane@email.com" oninput="update()"/></div>
-        <div class="form-group"><label>Phone</label><input id="phone" placeholder="+1 555 000 1234" oninput="update()"/></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Location</label><input id="location" placeholder="New York, NY" oninput="update()"/></div>
-        <div class="form-group"><label>Website / LinkedIn</label><input id="website" placeholder="linkedin.com/in/jane" oninput="update()"/></div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group"><label>Professional Summary</label><textarea id="summary" placeholder="Brief overview of your experience, skills, and goals…" oninput="update()"></textarea></div>
-      </div>
-    </div>
-  </div>
+  <div class="panel">
 
-  <!-- EXPERIENCE -->
-  <div class="form-section">
-    <div class="section-header" onclick="toggleSection(this)">
-      <span class="section-title"><span class="dot"></span>Work Experience</span>
-      <span class="section-arrow open">▾</span>
+    <!-- PERSONAL -->
+
+    <div class="section">
+
+      <h3>Personal Information</h3>
+
+      <div class="form-group">
+        <label>Profile Image</label>
+        <input type="file"
+               accept="image/*"
+               onchange="loadProfileImage(event)">
+      </div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input id="name"
+               oninput="updateCV()"
+               placeholder="John Doe">
+      </div>
+
+      <div class="form-group">
+        <label>Designation</label>
+        <input id="role"
+               oninput="updateCV()"
+               placeholder="Frontend Developer">
+      </div>
+
+      <div class="form-group">
+        <label>Phone</label>
+        <input id="phone"
+               oninput="updateCV()"
+               placeholder="+91 9876543210">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input id="email"
+               oninput="updateCV()"
+               placeholder="john@gmail.com">
+      </div>
+
+      <div class="form-group">
+        <label>Location</label>
+        <input id="location"
+               oninput="updateCV()"
+               placeholder="Delhi, India">
+      </div>
+
+      <div class="form-group">
+        <label>Website</label>
+        <input id="website"
+               oninput="updateCV()"
+               placeholder="linkedin.com/in/john">
+      </div>
+
+      <div class="form-group">
+        <label>Summary</label>
+        <textarea id="summary"
+                  oninput="updateCV()"></textarea>
+      </div>
+
     </div>
-    <div class="section-body open" id="experience-section-body">
+
+    <!-- SKILLS -->
+
+    <div class="section">
+
+      <h3>Skills</h3>
+
+      <div class="form-group">
+        <input id="skillInput"
+               placeholder="JavaScript">
+      </div>
+
+      <button class="add-btn"
+              onclick="addSkill()">
+        Add Skill
+      </button>
+
+      <div id="skillList"
+           style="margin-top:12px"></div>
+
+    </div>
+
+    <!-- LANGUAGES -->
+
+    <div class="section">
+
+      <h3>Languages</h3>
+
+      <div class="form-group">
+        <input id="languageInput"
+               placeholder="English">
+      </div>
+
+      <button class="add-btn"
+              onclick="addLanguage()">
+        Add Language
+      </button>
+
+      <div id="languageList"
+           style="margin-top:12px"></div>
+
+    </div>
+
+    <!-- EXPERIENCE -->
+
+    <div class="section">
+
+      <h3>Experience</h3>
+
       <div id="experience-list"></div>
-      <button class="add-btn" onclick="addExperience()">＋ Add Experience</button>
-    </div>
-  </div>
 
-  <!-- EDUCATION -->
-  <div class="form-section">
-    <div class="section-header" onclick="toggleSection(this)">
-      <span class="section-title"><span class="dot"></span>Education</span>
-      <span class="section-arrow open">▾</span>
+      <button class="add-btn"
+              onclick="addExperience()">
+        + Add Experience
+      </button>
+
     </div>
-    <div class="section-body open" id="education-section-body">
+
+    <!-- EDUCATION -->
+
+    <div class="section">
+
+      <h3>Education</h3>
+
       <div id="education-list"></div>
-      <button class="add-btn" onclick="addEducation()">＋ Add Education</button>
-    </div>
-  </div>
 
-  <!-- SKILLS -->
-  <div class="form-section">
-    <div class="section-header" onclick="toggleSection(this)">
-      <span class="section-title"><span class="dot"></span>Skills</span>
-      <span class="section-arrow open">▾</span>
-    </div>
-    <div class="section-body open">
-      <div class="skill-tags" id="skill-tags"></div>
-      <div class="skill-input-row">
-        <input id="skill-input" placeholder="e.g. JavaScript" onkeydown="if(event.key==='Enter'){addSkill();event.preventDefault()}"/>
-        <button class="btn-small" onclick="addSkill()">Add</button>
-      </div>
-    </div>
-  </div>
+      <button class="add-btn"
+              onclick="addEducation()">
+        + Add Education
+      </button>
 
-  <!-- LANGUAGES -->
-  <div class="form-section">
-    <div class="section-header" onclick="toggleSection(this)">
-      <span class="section-title"><span class="dot"></span>Languages</span>
-      <span class="section-arrow open">▾</span>
     </div>
-    <div class="section-body open">
-      <div id="language-list"></div>
-      <button class="add-btn" onclick="addLanguage()">＋ Add Language</button>
-    </div>
-  </div>
 
-  <!-- CERTIFICATIONS -->
-  <div class="form-section">
-    <div class="section-header" onclick="toggleSection(this)">
-      <span class="section-title"><span class="dot"></span>Certifications</span>
-      <span class="section-arrow open">▾</span>
-    </div>
-    <div class="section-body open">
-      <div id="cert-list"></div>
-      <button class="add-btn" onclick="addCert()">＋ Add Certification</button>
-    </div>
-  </div>
+    <!-- CERTIFICATES -->
 
-  <!-- THEME -->
-  <div class="form-section">
-    <div class="section-header" onclick="toggleSection(this)">
-      <span class="section-title"><span class="dot"></span>CV Theme Color</span>
-      <span class="section-arrow">▾</span>
-    </div>
-    <div class="section-body">
-      <div style="font-size:.73rem;color:var(--muted);margin-bottom:.5rem">Choose header & accent color</div>
-      <div class="color-pickers" id="color-pickers"></div>
-    </div>
-  </div>
+    <div class="section">
 
-</aside>
+      <h3>Certificates</h3>
 
-<!-- ═══════════════════ PREVIEW PANEL ═══════════════════ -->
-<main class="preview-panel">
-  <div style="width:100%;max-width:210mm">
-    <div class="print-controls">
-      <button class="btn btn-accent" onclick="printCV()">⬇ Download / Print CV</button>
+      <div id="certificate-list"></div>
+
+      <button class="add-btn"
+              onclick="addCertificate()">
+        + Add Certificate
+      </button>
+
     </div>
-    <!-- CV DOCUMENT -->
-    <div class="cv-doc" id="cv-doc">
-      <!-- HEADER -->
-      <header class="cv-header" id="cv-header">
-        <div class="cv-header-photo-placeholder" id="cv-photo">📷</div>
-        <div class="cv-header-text">
-          <div class="cv-name" id="cv-name">Your Full Name</div>
-          <div class="cv-title" id="cv-job-title">Job Title</div>
-          <div class="cv-contacts" id="cv-contacts"></div>
+        <!-- TEMPLATE -->
+
+    <div class="section">
+
+      <h3>Choose Layout</h3>
+
+      <div class="template-grid">
+
+        <div class="template-card active"
+             onclick="changeTemplate('classic',this)">
+
+          <div class="template-preview classic-preview">
+
+            <div class="top"></div>
+
+            <div class="body">
+
+              <div class="left"></div>
+
+              <div class="right"></div>
+
+            </div>
+
+          </div>
+
+          Classic
+
         </div>
-      </header>
-      <div class="cv-accent-bar" id="cv-accent-bar"></div>
-      <div class="cv-body">
-        <!-- SIDEBAR -->
-        <aside class="cv-sidebar">
-          <div class="cv-sidebar-section" id="cv-skills-section">
-            <div class="cv-sec-title">Skills</div>
-            <div id="cv-skills-content"><span class="cv-empty">Add skills…</span></div>
+
+        <div class="template-card"
+             onclick="changeTemplate('modern',this)">
+
+          <div class="template-preview modern-preview">
+
+            <div class="bar"></div>
+
+            <div class="line"></div>
+
+            <div class="line"></div>
+
           </div>
-          <div class="cv-sidebar-section" id="cv-lang-section">
-            <div class="cv-sec-title">Languages</div>
-            <div id="cv-lang-content"><span class="cv-empty">Add languages…</span></div>
+
+          Modern
+
+        </div>
+
+        <div class="template-card"
+             onclick="changeTemplate('minimal',this)">
+
+          <div class="template-preview minimal-preview">
+
+            <div class="name"></div>
+
+            <div class="l"></div>
+
+            <div class="l"></div>
+
           </div>
-          <div class="cv-sidebar-section" id="cv-cert-section">
-            <div class="cv-sec-title">Certifications</div>
-            <div id="cv-cert-content"><span class="cv-empty">Add certifications…</span></div>
-          </div>
-        </aside>
-        <!-- MAIN -->
-        <main class="cv-main">
-          <div class="cv-main-section" id="cv-profile-section">
-            <div class="cv-main-title">Profile</div>
-            <div class="cv-profile" id="cv-profile-text"><span class="cv-empty">Add a professional summary…</span></div>
-          </div>
-          <div class="cv-main-section" id="cv-exp-section">
-            <div class="cv-main-title">Experience</div>
-            <div id="cv-exp-content"><span class="cv-empty">Add work experience…</span></div>
-          </div>
-          <div class="cv-main-section" id="cv-edu-section">
-            <div class="cv-main-title">Education</div>
-            <div id="cv-edu-content"><span class="cv-empty">Add education…</span></div>
-          </div>
-        </main>
+
+          Minimal
+
+        </div>
+
       </div>
+
     </div>
+
   </div>
-</main>
+
+  <!-- RIGHT -->
+
+  <div class="preview">
+
+    <div class="cv template-classic"
+         id="cv">
+
+      <!-- HEADER -->
+
+      <div class="cv-header">
+
+        <div class="cv-header-flex">
+
+          <img id="cv-image"
+               class="cv-image"
+               src="https://via.placeholder.com/120">
+
+          <div>
+
+            <div class="cv-name"
+                 id="cv-name">
+              Your Name
+            </div>
+
+            <div class="cv-role"
+                 id="cv-role">
+              Designation
+            </div>
+
+            <div class="cv-contact">
+
+              <div id="cv-phone">
+                +91 9876543210
+              </div>
+
+              <div id="cv-email">
+                email@example.com
+              </div>
+
+              <div id="cv-location">
+                Delhi, India
+              </div>
+
+              <div id="cv-website">
+                linkedin.com
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- CONTENT -->
+
+      <div class="cv-content">
+
+        <!-- SIDEBAR -->
+
+        <div class="cv-sidebar">
+
+          <div class="cv-section">
+
+            <div class="cv-title">
+              Skills
+            </div>
+
+            <div id="cv-skills">
+              No skills added
+            </div>
+
+          </div>
+
+          <div class="cv-section">
+
+            <div class="cv-title">
+              Languages
+            </div>
+
+            <div id="cv-languages">
+              No languages added
+            </div>
+
+          </div>
+
+          <div class="cv-section">
+
+            <div class="cv-title">
+              Certificates
+            </div>
+
+            <div id="cv-certificates">
+              No certificates added
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- MAIN -->
+
+        <div class="cv-main">
+
+          <div class="cv-section">
+
+            <div class="cv-title">
+              Profile
+            </div>
+
+            <div id="cv-summary">
+              Add professional summary
+            </div>
+
+          </div>
+
+          <div class="cv-section">
+
+            <div class="cv-title">
+              Experience
+            </div>
+
+            <div id="cv-experience">
+              No experience added
+            </div>
+
+          </div>
+
+          <div class="cv-section">
+
+            <div class="cv-title">
+              Education
+            </div>
+
+            <div id="cv-education">
+              No education added
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
 
 <script>
-/* ─────────── STATE ─────────── */
-const S={
-  photo:null,
-  skills:[],
-  experience:[],
-  education:[],
-  languages:[],
-  certs:[],
-  themeColor:{header:'#0f1c2e',accent:'#c9a84c',bg:'#f1f4f8'}
-};
-let expId=0,eduId=0,langId=0,certId=0;
 
-/* ─────────── THEMES ─────────── */
-const THEMES=[
-  {header:'#0f1c2e',accent:'#c9a84c',bg:'#f1f4f8'},
-  {header:'#1a3a5c',accent:'#e07b39',bg:'#f3f4f6'},
-  {header:'#1e3a2f',accent:'#4caf82',bg:'#f1f7f4'},
-  {header:'#2d1b4e',accent:'#a78bfa',bg:'#f5f3ff'},
-  {header:'#3b1f1f',accent:'#e05c5c',bg:'#fdf4f4'},
-  {header:'#1a2535',accent:'#60a5fa',bg:'#f0f6ff'},
-  {header:'#2c2c2c',accent:'#d4a017',bg:'#f7f6f4'},
-  {header:'#004e64',accent:'#00b4d8',bg:'#f0faff'},
-];
+/* DATA */
 
-function buildColorPickers(){
-  const c=document.getElementById('color-pickers');
-  THEMES.forEach((t,i)=>{
-    const d=document.createElement('div');
-    d.className='color-swatch'+(i===0?' active':'');
-    d.style.background=t.header;
-    d.style.border='2px solid '+t.accent;
-    d.onclick=()=>applyTheme(t,d);
-    c.appendChild(d);
-  });
-}
+let skills=[];
+let languages=[];
+let experiences=[];
+let educations=[];
+let certificates=[];
 
-function applyTheme(t,el){
-  S.themeColor=t;
-  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('cv-header').style.background=t.header;
-  document.getElementById('cv-accent-bar').style.background=t.accent;
-  document.documentElement.style.setProperty('--accent',t.accent);
-  document.documentElement.style.setProperty('--accent-light',hexToRgba(t.accent,.12));
-  document.querySelectorAll('.cv-sec-title').forEach(el=>{el.style.color=t.accent;el.style.borderBottomColor=t.accent});
-  document.querySelectorAll('.cv-main-title').forEach(el=>el.style.borderBottomColor=t.accent);
-  document.querySelectorAll('.cv-entry-date').forEach(el=>{el.style.color=t.accent;el.style.background=hexToRgba(t.accent,.12)});
-  document.querySelectorAll('.cv-skill-bar-fill').forEach(el=>el.style.background=t.accent);
-  document.querySelectorAll('.cv-tag').forEach(el=>el.style.background=t.header);
-  document.querySelectorAll('.cv-sidebar').forEach(el=>el.style.background=t.bg);
-}
+let expId=0;
+let eduId=0;
+let certId=0;
 
-function hexToRgba(hex,a){
-  let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${a})`;
-}
+/* PROFILE IMAGE */
 
-/* ─────────── SECTION TOGGLE ─────────── */
-function toggleSection(header){
-  const body=header.nextElementSibling;
-  const arrow=header.querySelector('.section-arrow');
-  body.classList.toggle('open');
-  arrow.classList.toggle('open');
-}
+function loadProfileImage(event){
 
-/* ─────────── PHOTO ─────────── */
-function handlePhoto(input){
-  const file=input.files[0];if(!file)return;
+  const image=document.getElementById('cv-image');
+
+  const file=event.target.files[0];
+
+  if(!file) return;
+
   const reader=new FileReader();
-  reader.onload=e=>{
-    S.photo=e.target.result;
-    document.getElementById('photo-preview-circle').innerHTML=`<img src="${S.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
-    document.getElementById('cv-photo').outerHTML=`<img class="cv-header-photo" id="cv-photo" src="${S.photo}" alt="Profile"/>`;
-  };
+
+  reader.onload=function(e){
+
+    image.src=e.target.result;
+
+  }
+
   reader.readAsDataURL(file);
+
 }
 
-/* ─────────── SKILLS ─────────── */
+/* UPDATE */
+
+function updateCV(){
+
+  document.getElementById('cv-name').innerText=
+    document.getElementById('name').value || 'Your Name';
+
+  document.getElementById('cv-role').innerText=
+    document.getElementById('role').value || 'Designation';
+
+  document.getElementById('cv-phone').innerText=
+    document.getElementById('phone').value || '+91 9876543210';
+
+  document.getElementById('cv-email').innerText=
+    document.getElementById('email').value || 'email@example.com';
+
+  document.getElementById('cv-location').innerText=
+    document.getElementById('location').value || 'Delhi, India';
+
+  document.getElementById('cv-website').innerText=
+    document.getElementById('website').value || 'linkedin.com';
+
+  document.getElementById('cv-summary').innerText=
+    document.getElementById('summary').value || 'Add professional summary';
+
+}
+
+/* TEMPLATE */
+
+function changeTemplate(type,el){
+
+  document.querySelectorAll('.template-card')
+    .forEach(card=>card.classList.remove('active'));
+
+  el.classList.add('active');
+
+  const cv=document.getElementById('cv');
+
+  cv.classList.remove(
+    'template-classic',
+    'template-modern',
+    'template-minimal'
+  );
+
+  cv.classList.add('template-'+type);
+
+}
+
+/* SKILLS */
+
 function addSkill(){
-  const inp=document.getElementById('skill-input');
-  const v=inp.value.trim();if(!v)return;
-  if(!S.skills.includes(v))S.skills.push(v);
-  inp.value='';
-  renderSkillTags();
-  update();
+
+  let input=document.getElementById('skillInput');
+
+  let value=input.value.trim();
+
+  if(!value) return;
+
+  skills.push(value);
+
+  input.value='';
+
+  renderSkills();
+
 }
 
-function removeSkill(s){
-  S.skills=S.skills.filter(x=>x!==s);
-  renderSkillTags();update();
+function removeSkill(i){
+
+  skills.splice(i,1);
+
+  renderSkills();
+
 }
 
-function renderSkillTags(){
-  const c=document.getElementById('skill-tags');
-  c.innerHTML=S.skills.map(s=>`<span class="skill-tag">${esc(s)}<button onclick="removeSkill('${esc(s)}')" title="Remove">×</button></span>`).join('');
+function renderSkills(){
+
+  let list=document.getElementById('skillList');
+
+  list.innerHTML='';
+
+  skills.forEach((s,i)=>{
+
+    list.innerHTML+=`
+      <div class="entry">
+        ${s}
+        <button class="remove"
+                onclick="removeSkill(${i})">
+          ×
+        </button>
+      </div>
+    `;
+
+  });
+
+  document.getElementById('cv-skills').innerHTML=
+    skills.length
+      ? skills.map(s=>`
+          <span class="skill">${s}</span>
+        `).join('')
+      : 'No skills added';
+
 }
 
-/* ─────────── EXPERIENCE ─────────── */
+/* LANGUAGES */
+
+function addLanguage(){
+
+  let input=document.getElementById('languageInput');
+
+  let value=input.value.trim();
+
+  if(!value) return;
+
+  languages.push(value);
+
+  input.value='';
+
+  renderLanguages();
+
+}
+
+function removeLanguage(i){
+
+  languages.splice(i,1);
+
+  renderLanguages();
+
+}
+
+function renderLanguages(){
+
+  let list=document.getElementById('languageList');
+
+  list.innerHTML='';
+
+  languages.forEach((l,i)=>{
+
+    list.innerHTML+=`
+      <div class="entry">
+        ${l}
+        <button class="remove"
+                onclick="removeLanguage(${i})">
+          ×
+        </button>
+      </div>
+    `;
+
+  });
+
+  document.getElementById('cv-languages').innerHTML=
+    languages.length
+      ? languages.join('<br>')
+      : 'No languages added';
+
+}
+
+/* EXPERIENCE */
+
 function addExperience(){
-  const id=++expId;
-  S.experience.push({id,role:'',company:'',period:'',desc:''});
-  renderExperienceList();update();
+
+  expId++;
+
+  experiences.push({
+    id:expId,
+    title:'',
+    company:'',
+    duration:'',
+    desc:''
+  });
+
+  renderExperience();
+
+}
+
+function updateExp(id,key,val){
+
+  let exp=experiences.find(x=>x.id===id);
+
+  exp[key]=val;
+
+  renderCVExperience();
+
 }
 
 function removeExperience(id){
-  S.experience=S.experience.filter(e=>e.id!==id);
-  renderExperienceList();update();
+
+  experiences=experiences.filter(x=>x.id!==id);
+
+  renderExperience();
+
 }
 
-function renderExperienceList(){
-  const c=document.getElementById('experience-list');
-  c.innerHTML=S.experience.map(e=>`
-    <div class="entry-card">
-      <button class="remove-btn" onclick="removeExperience(${e.id})">✕</button>
-      <div class="form-row">
-        <div class="form-group"><label>Job Title</label><input value="${esc(e.role)}" placeholder="Senior Designer" oninput="S.experience.find(x=>x.id===${e.id}).role=this.value;update()"/></div>
-        <div class="form-group"><label>Company</label><input value="${esc(e.company)}" placeholder="Acme Inc." oninput="S.experience.find(x=>x.id===${e.id}).company=this.value;update()"/></div>
+function renderExperience(){
+
+  let list=document.getElementById('experience-list');
+
+  list.innerHTML='';
+
+  experiences.forEach(exp=>{
+
+    list.innerHTML+=`
+
+      <div class="entry">
+
+        <button class="remove"
+                onclick="removeExperience(${exp.id})">
+          ×
+        </button>
+
+        <div class="form-group">
+          <label>Job Title</label>
+
+          <input value="${exp.title}"
+                 oninput="updateExp(${exp.id},'title',this.value)">
+        </div>
+
+        <div class="form-group">
+          <label>Company</label>
+
+          <input value="${exp.company}"
+                 oninput="updateExp(${exp.id},'company',this.value)">
+        </div>
+
+        <div class="form-group">
+          <label>Duration</label>
+
+          <input value="${exp.duration}"
+                 oninput="updateExp(${exp.id},'duration',this.value)">
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+
+          <textarea
+            oninput="updateExp(${exp.id},'desc',this.value)"
+          >${exp.desc}</textarea>
+
+        </div>
+
       </div>
-      <div class="form-row full">
-        <div class="form-group"><label>Period</label><input value="${esc(e.period)}" placeholder="Jan 2021 – Present" oninput="S.experience.find(x=>x.id===${e.id}).period=this.value;update()"/></div>
-      </div>
-      <div class="form-group"><label>Description / Achievements</label><textarea placeholder="• Led redesign of checkout flow, increasing conversion 24%…" oninput="S.experience.find(x=>x.id===${e.id}).desc=this.value;update()">${esc(e.desc)}</textarea></div>
-    </div>`).join('');
+
+    `;
+
+  });
+
+  renderCVExperience();
+
 }
 
-/* ─────────── EDUCATION ─────────── */
+function renderCVExperience(){
+
+  document.getElementById('cv-experience').innerHTML=
+
+    experiences.length
+
+    ? experiences.map(exp=>`
+
+      <div class="exp">
+
+        <h4>${exp.title || 'Job Title'}</h4>
+
+        <small>
+          ${exp.company || 'Company'}
+          ${exp.duration ? ' | '+exp.duration : ''}
+        </small>
+
+        <p style="margin-top:8px">
+          ${exp.desc || ''}
+        </p>
+
+      </div>
+
+    `).join('')
+
+    : 'No experience added';
+
+}
+
+/* EDUCATION */
+
 function addEducation(){
-  const id=++eduId;
-  S.education.push({id,degree:'',school:'',period:'',note:''});
-  renderEducationList();update();
+
+  eduId++;
+
+  educations.push({
+    id:eduId,
+    degree:'',
+    institute:'',
+    year:''
+  });
+
+  renderEducation();
+
+}
+
+function updateEdu(id,key,val){
+
+  let edu=educations.find(x=>x.id===id);
+
+  edu[key]=val;
+
+  renderCVEducation();
+
 }
 
 function removeEducation(id){
-  S.education=S.education.filter(e=>e.id!==id);
-  renderEducationList();update();
+
+  educations=educations.filter(x=>x.id!==id);
+
+  renderEducation();
+
 }
 
-function renderEducationList(){
-  const c=document.getElementById('education-list');
-  c.innerHTML=S.education.map(e=>`
-    <div class="entry-card">
-      <button class="remove-btn" onclick="removeEducation(${e.id})">✕</button>
-      <div class="form-row">
-        <div class="form-group"><label>Degree / Field</label><input value="${esc(e.degree)}" placeholder="BSc Computer Science" oninput="S.education.find(x=>x.id===${e.id}).degree=this.value;update()"/></div>
-        <div class="form-group"><label>School / University</label><input value="${esc(e.school)}" placeholder="MIT" oninput="S.education.find(x=>x.id===${e.id}).school=this.value;update()"/></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label>Period</label><input value="${esc(e.period)}" placeholder="2015 – 2019" oninput="S.education.find(x=>x.id===${e.id}).period=this.value;update()"/></div>
-        <div class="form-group"><label>Note (GPA, Honours…)</label><input value="${esc(e.note)}" placeholder="First Class Honours" oninput="S.education.find(x=>x.id===${e.id}).note=this.value;update()"/></div>
-      </div>
-    </div>`).join('');
-}
+function renderEducation(){
 
-/* ─────────── LANGUAGES ─────────── */
-function addLanguage(){
-  const id=++langId;
-  S.languages.push({id,lang:'',level:'Native'});
-  renderLanguageList();update();
-}
+  let list=document.getElementById('education-list');
 
-function removeLanguage(id){
-  S.languages=S.languages.filter(e=>e.id!==id);
-  renderLanguageList();update();
-}
+  list.innerHTML='';
 
-function renderLanguageList(){
-  const c=document.getElementById('language-list');
-  c.innerHTML=S.languages.map(e=>`
-    <div class="entry-card">
-      <button class="remove-btn" onclick="removeLanguage(${e.id})">✕</button>
-      <div class="form-row">
-        <div class="form-group"><label>Language</label><input value="${esc(e.lang)}" placeholder="English" oninput="S.languages.find(x=>x.id===${e.id}).lang=this.value;update()"/></div>
-        <div class="form-group"><label>Proficiency</label>
-          <select oninput="S.languages.find(x=>x.id===${e.id}).level=this.value;update()">
-            ${['Native','Fluent','Advanced','Intermediate','Beginner'].map(l=>`<option${e.level===l?' selected':''}>${l}</option>`).join('')}
-          </select>
+  educations.forEach(edu=>{
+
+    list.innerHTML+=`
+
+      <div class="entry">
+
+        <button class="remove"
+                onclick="removeEducation(${edu.id})">
+          ×
+        </button>
+
+        <div class="form-group">
+          <label>Degree</label>
+
+          <input value="${edu.degree}"
+                 oninput="updateEdu(${edu.id},'degree',this.value)">
         </div>
-      </div>
-    </div>`).join('');
-}
 
-/* ─────────── CERTIFICATIONS ─────────── */
-function addCert(){
-  const id=++certId;
-  S.certs.push({id,name:'',issuer:'',year:''});
-  renderCertList();update();
-}
+        <div class="form-group">
+          <label>Institute</label>
 
-function removeCert(id){
-  S.certs=S.certs.filter(e=>e.id!==id);
-  renderCertList();update();
-}
-
-function renderCertList(){
-  const c=document.getElementById('cert-list');
-  c.innerHTML=S.certs.map(e=>`
-    <div class="entry-card">
-      <button class="remove-btn" onclick="removeCert(${e.id})">✕</button>
-      <div class="form-row">
-        <div class="form-group"><label>Certification</label><input value="${esc(e.name)}" placeholder="AWS Solutions Architect" oninput="S.certs.find(x=>x.id===${e.id}).name=this.value;update()"/></div>
-        <div class="form-group"><label>Issuer</label><input value="${esc(e.issuer)}" placeholder="Amazon" oninput="S.certs.find(x=>x.id===${e.id}).issuer=this.value;update()"/></div>
-      </div>
-      <div class="form-row full">
-        <div class="form-group"><label>Year</label><input value="${esc(e.year)}" placeholder="2023" oninput="S.certs.find(x=>x.id===${e.id}).year=this.value;update()"/></div>
-      </div>
-    </div>`).join('');
-}
-
-/* ─────────── LIVE UPDATE ─────────── */
-function update(){
-  const fn=document.getElementById('firstName').value.trim();
-  const ln=document.getElementById('lastName').value.trim();
-  const name=(fn||ln)?(fn+' '+ln).trim():'Your Full Name';
-  document.getElementById('cv-name').textContent=name;
-  document.getElementById('cv-job-title').textContent=document.getElementById('jobTitle').value||'Job Title';
-
-  // contacts
-  const email=document.getElementById('email').value;
-  const phone=document.getElementById('phone').value;
-  const loc=document.getElementById('location').value;
-  const web=document.getElementById('website').value;
-  const contacts=[];
-  if(email)contacts.push(`<span class="cv-contact-item"><span class="cv-icon">✉</span>${esc(email)}</span>`);
-  if(phone)contacts.push(`<span class="cv-contact-item"><span class="cv-icon">☎</span>${esc(phone)}</span>`);
-  if(loc)contacts.push(`<span class="cv-contact-item"><span class="cv-icon">📍</span>${esc(loc)}</span>`);
-  if(web)contacts.push(`<span class="cv-contact-item"><span class="cv-icon">🔗</span>${esc(web)}</span>`);
-  document.getElementById('cv-contacts').innerHTML=contacts.join('');
-
-  // profile
-  const sum=document.getElementById('summary').value.trim();
-  document.getElementById('cv-profile-text').innerHTML=sum?`<p>${esc(sum).replace(/\n/g,'<br/>')}</p>`:'<span class="cv-empty">Add a professional summary…</span>';
-
-  // skills
-  const skillsEl=document.getElementById('cv-skills-content');
-  if(S.skills.length){
-    skillsEl.innerHTML=S.skills.map(s=>`
-      <div class="cv-skill-item">
-        <span class="cv-skill-name">${esc(s)}</span>
-        <div class="cv-skill-bar-track"><div class="cv-skill-bar-fill" style="width:${75+Math.floor(Math.random()*0)}%;background:${S.themeColor.accent}"></div></div>
-      </div>`).join('');
-  } else {
-    skillsEl.innerHTML='<span class="cv-empty">Add skills…</span>';
-  }
-
-  // languages
-  const langEl=document.getElementById('cv-lang-content');
-  if(S.languages.length&&S.languages.some(l=>l.lang)){
-    langEl.innerHTML=S.languages.filter(l=>l.lang).map(l=>`
-      <div class="cv-lang-item"><span>${esc(l.lang)}</span><span class="cv-lang-level">${l.level}</span></div>`).join('');
-  } else {
-    langEl.innerHTML='<span class="cv-empty">Add languages…</span>';
-  }
-
-  // certs
-  const certEl=document.getElementById('cv-cert-content');
-  if(S.certs.length&&S.certs.some(c=>c.name)){
-    certEl.innerHTML=S.certs.filter(c=>c.name).map(c=>`
-      <div class="cv-entry" style="margin-bottom:.5rem;padding-bottom:.5rem">
-        <div class="cv-entry-title" style="font-size:.76rem">${esc(c.name)}</div>
-        <div class="cv-entry-sub">${esc(c.issuer)}${c.year?' · '+esc(c.year):''}</div>
-      </div>`).join('');
-  } else {
-    certEl.innerHTML='<span class="cv-empty">Add certifications…</span>';
-  }
-
-  // experience
-  const expEl=document.getElementById('cv-exp-content');
-  const expFilled=S.experience.filter(e=>e.role||e.company);
-  if(expFilled.length){
-    expEl.innerHTML=expFilled.map(e=>`
-      <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-title">${esc(e.role||'Role')}</span>
-          ${e.period?`<span class="cv-entry-date" style="color:${S.themeColor.accent};background:${hexToRgba(S.themeColor.accent,.12)}">${esc(e.period)}</span>`:''}
+          <input value="${edu.institute}"
+                 oninput="updateEdu(${edu.id},'institute',this.value)">
         </div>
-        <div class="cv-entry-sub">${esc(e.company)}</div>
-        <div class="cv-entry-desc">${formatDesc(e.desc)}</div>
-      </div>`).join('');
-  } else {
-    expEl.innerHTML='<span class="cv-empty">Add work experience…</span>';
-  }
 
-  // education
-  const eduEl=document.getElementById('cv-edu-content');
-  const eduFilled=S.education.filter(e=>e.degree||e.school);
-  if(eduFilled.length){
-    eduEl.innerHTML=eduFilled.map(e=>`
-      <div class="cv-entry">
-        <div class="cv-entry-header">
-          <span class="cv-entry-title">${esc(e.degree||'Degree')}</span>
-          ${e.period?`<span class="cv-entry-date" style="color:${S.themeColor.accent};background:${hexToRgba(S.themeColor.accent,.12)}">${esc(e.period)}</span>`:''}
+        <div class="form-group">
+          <label>Year</label>
+
+          <input value="${edu.year}"
+                 oninput="updateEdu(${edu.id},'year',this.value)">
         </div>
-        <div class="cv-entry-sub">${esc(e.school)}${e.note?' — '+esc(e.note):''}</div>
-      </div>`).join('');
-  } else {
-    eduEl.innerHTML='<span class="cv-empty">Add education…</span>';
-  }
+
+      </div>
+
+    `;
+
+  });
+
+  renderCVEducation();
+
 }
 
-function formatDesc(desc){
-  if(!desc)return '';
-  const lines=desc.split('\n').map(l=>l.trim()).filter(l=>l);
-  if(lines.some(l=>l.startsWith('•')||l.startsWith('-'))){
-    return '<ul>'+lines.map(l=>`<li>${esc(l.replace(/^[•\-]\s*/,''))}</li>`).join('')+'</ul>';
-  }
-  return lines.map(l=>`<p style="margin-bottom:.25rem">${esc(l)}</p>`).join('');
+function renderCVEducation(){
+
+  document.getElementById('cv-education').innerHTML=
+
+    educations.length
+
+    ? educations.map(edu=>`
+
+      <div class="edu">
+
+        <h4>${edu.degree || 'Degree'}</h4>
+
+        <small>
+          ${edu.institute || 'Institute'}
+          ${edu.year ? ' | '+edu.year : ''}
+        </small>
+
+      </div>
+
+    `).join('')
+
+    : 'No education added';
+
 }
 
-function esc(s){
-  if(!s)return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* CERTIFICATES */
+
+function addCertificate(){
+
+  certId++;
+
+  certificates.push({
+    id:certId,
+    name:'',
+    org:''
+  });
+
+  renderCertificates();
+
 }
 
-/* ─────────── PRINT ─────────── */
-function printCV(){
-  // Force re-apply all theme inline styles before capturing outerHTML
-  const t=S.themeColor;
-  const hdr=document.getElementById('cv-header');
-  if(hdr)hdr.style.background=t.header;
-  document.getElementById('cv-accent-bar').style.background=t.accent;
-  document.querySelectorAll('.cv-sec-title').forEach(el=>{el.style.color=t.accent;el.style.borderBottomColor=t.accent;});
-  document.querySelectorAll('.cv-main-title').forEach(el=>{el.style.borderBottomColor=t.accent;});
-  document.querySelectorAll('.cv-entry-date').forEach(el=>{el.style.color=t.accent;el.style.background=hexToRgba(t.accent,.12);});
-  document.querySelectorAll('.cv-skill-bar-fill').forEach(el=>el.style.background=t.accent);
-  document.querySelectorAll('.cv-tag').forEach(el=>el.style.background=t.header);
-  document.querySelectorAll('.cv-sidebar').forEach(el=>el.style.background=t.bg||'#f1f4f8');
-  const cvHTML=document.getElementById('cv-doc').outerHTML;
-  const headerColor=S.themeColor.header;
-  const accentColor=S.themeColor.accent;
-  const accentLight=hexToRgba(accentColor,.12);
-  const sidebarBg=S.themeColor.bg||'#f1f4f8';
-  const win=window.open('','_blank','width=900,height=700');
-  win.document.write(`<!DOCTYPE html>
-<html><head>
-<meta charset="UTF-8"/>
-<title>CV</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --navy:${headerColor};--slate:#4a5568;--muted:#6b7280;
-  --accent:${accentColor};--accent-light:${accentLight};--border:#e2e8f0;
-  --surface:#f8fafc;--white:#ffffff;
-  --font-display:'Playfair Display',Georgia,serif;
-  --font-body:'DM Sans',system-ui,sans-serif;
-}
-*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
-body{font-family:var(--font-body);background:#fff;margin:0;padding:0}
-.cv-doc{width:210mm;min-height:297mm;background:#fff;margin:0 auto;display:flex;flex-direction:column}
-.cv-header{background:${headerColor}!important;color:#fff!important;padding:2.4rem 2.6rem 2rem;display:flex;gap:1.5rem;align-items:flex-start}
-.cv-header-photo{width:82px;height:82px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.3);flex-shrink:0}
-.cv-header-photo-placeholder{width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(255,255,255,.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2rem;color:rgba(255,255,255,.4)}
-.cv-header-text{flex:1;min-width:0}
-.cv-name{font-family:var(--font-display);font-size:2.1rem;font-weight:700;line-height:1.1;color:#fff;word-break:break-word}
-.cv-title{font-size:.95rem;font-weight:300;color:rgba(255,255,255,.75);margin:.3rem 0 .9rem;letter-spacing:.04em}
-.cv-contacts{display:flex;flex-wrap:wrap;gap:.3rem .9rem}
-.cv-contact-item{font-size:.73rem;color:rgba(255,255,255,.65);display:flex;align-items:center;gap:4px}
-.cv-icon{font-size:.75rem;opacity:.7}
-.cv-accent-bar{height:5px;background:${accentColor}!important}
-.cv-body{display:grid;grid-template-columns:1fr 2.3fr;flex:1}
-.cv-sidebar{background:${sidebarBg}!important;padding:1.5rem 1.4rem;border-right:1px solid #e4e8ef}
-.cv-sidebar-section{margin-bottom:1.6rem}
-.cv-sec-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:${accentColor};margin-bottom:.7rem;padding-bottom:.35rem;border-bottom:1.5px solid ${accentColor}}
-.cv-skill-item{display:flex;flex-direction:column;gap:3px;margin-bottom:.5rem}
-.cv-skill-name{font-size:.75rem;color:var(--navy);font-weight:500}
-.cv-skill-bar-track{height:3px;background:#dde1e8;border-radius:2px}
-.cv-skill-bar-fill{height:3px;background:${accentColor}!important;border-radius:2px}
-.cv-tag{display:inline-block;background:${headerColor}!important;color:#fff!important;font-size:.65rem;padding:3px 8px;border-radius:3px;margin:2px}
-.cv-lang-item{font-size:.75rem;color:var(--slate);margin-bottom:.25rem;display:flex;justify-content:space-between}
-.cv-lang-level{font-size:.7rem;color:var(--muted);font-style:italic}
-.cv-main{padding:1.5rem 1.8rem}
-.cv-main-section{margin-bottom:1.5rem}
-.cv-main-title{font-family:var(--font-display);font-size:.95rem;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;border-bottom:2px solid ${accentColor};padding-bottom:.3rem;margin-bottom:.9rem}
-.cv-profile{font-size:.8rem;line-height:1.7;color:var(--slate)}
-.cv-entry{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
-.cv-entry:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-.cv-entry-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.18rem}
-.cv-entry-title{font-size:.83rem;font-weight:600;color:var(--navy);font-family:var(--font-display)}
-.cv-entry-date{font-size:.7rem;color:${accentColor};white-space:nowrap;font-weight:500;background:${accentLight};padding:2px 7px;border-radius:3px;flex-shrink:0}
-.cv-entry-sub{font-size:.76rem;color:var(--muted);font-style:italic;margin-bottom:.3rem}
-.cv-entry-desc{font-size:.76rem;line-height:1.65;color:var(--slate)}
-.cv-entry-desc ul{padding-left:1rem}
-.cv-entry-desc li{margin-bottom:.15rem}
-.cv-empty{font-size:.75rem;color:#cbd5e0;font-style:italic}
-@media print{
-  @page{margin:0;size:A4}
-  body{margin:0}
-  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  .cv-doc{width:100%;min-height:100vh}
-  .cv-header{background:${headerColor}!important}
-  .cv-accent-bar{background:${accentColor}!important}
-  .cv-sidebar{background:${sidebarBg}!important}
-  .cv-skill-bar-fill{background:${accentColor}!important}
-  .cv-skill-bar-track{background:#dde1e8!important}
-  .cv-entry-date{color:${accentColor}!important;background:${accentLight}!important}
-  .cv-sec-title{color:${accentColor}!important;border-bottom-color:${accentColor}!important}
-  .cv-main-title{border-bottom-color:${accentColor}!important}
-}
-</style>
-</head><body>
-${cvHTML}
-<script>window.onload=function(){window.print();}<\/script>
-</body></html>`);
-  win.document.close();
+function updateCertificate(id,key,val){
+
+  let cert=certificates.find(x=>x.id===id);
+
+  cert[key]=val;
+
+  renderCVCertificates();
+
 }
 
-/* ─────────── CLEAR ─────────── */
+function removeCertificate(id){
+
+  certificates=certificates.filter(x=>x.id!==id);
+
+  renderCertificates();
+
+}
+
+function renderCertificates(){
+
+  let list=document.getElementById('certificate-list');
+
+  list.innerHTML='';
+
+  certificates.forEach(cert=>{
+
+    list.innerHTML+=`
+
+      <div class="entry">
+
+        <button class="remove"
+                onclick="removeCertificate(${cert.id})">
+          ×
+        </button>
+
+        <div class="form-group">
+          <label>Certificate Name</label>
+
+          <input value="${cert.name}"
+                 oninput="updateCertificate(${cert.id},'name',this.value)">
+        </div>
+
+        <div class="form-group">
+          <label>Organization</label>
+
+          <input value="${cert.org}"
+                 oninput="updateCertificate(${cert.id},'org',this.value)">
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  renderCVCertificates();
+
+}
+
+function renderCVCertificates(){
+
+  document.getElementById('cv-certificates').innerHTML=
+
+    certificates.length
+
+    ? certificates.map(cert=>`
+
+      <div style="margin-bottom:12px">
+
+        <strong>${cert.name}</strong><br>
+
+        <small>${cert.org}</small>
+
+      </div>
+
+    `).join('')
+
+    : 'No certificates added';
+
+}
+
+/* CLEAR */
+
 function clearAll(){
-  if(!confirm('Clear all data?'))return;
-  document.querySelectorAll('input:not([type=file]):not([type=color]),textarea').forEach(el=>el.value='');
-  S.skills=[];S.experience=[];S.education=[];S.languages=[];S.certs=[];S.photo=null;
-  expId=0;eduId=0;langId=0;certId=0;
-  renderSkillTags();renderExperienceList();renderEducationList();renderLanguageList();renderCertList();
-  document.getElementById('photo-preview-circle').innerHTML='📷';
-  update();
+
+  if(!confirm('Clear all CV data?')) return;
+
+  document.querySelectorAll('input,textarea')
+    .forEach(el=>el.value='');
+
+  skills=[];
+  languages=[];
+  experiences=[];
+  educations=[];
+  certificates=[];
+
+  renderSkills();
+  renderLanguages();
+  renderExperience();
+  renderEducation();
+  renderCertificates();
+
+  updateCV();
+
 }
 
-/* ─────────── INIT ─────────── */
-buildColorPickers();
-// Apply default theme so all inline styles are set from the start
-(function(){
-  const firstSwatch=document.querySelector('.color-swatch');
-  applyTheme(THEMES[0],firstSwatch);
-})();
-update();
+/* INIT */
+
+updateCV();
+
 </script>
+
 </body>
 </html>
